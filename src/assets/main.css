@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/**/
+.cus-top-menu-item{
+    @apply cursor-pointer py-1 hover:text-gray-800 relative after:lg:absolute after:lg:bottom-0 after:lg:left-0
+    after:lg:bg-slate-900 after:lg:h-0.5 after:lg:w-0 hover:after:lg:w-full after:lg:transition-all after:lg:ease-in-out after:lg:duration-300;
+}
+.cus-topmenu-expanded{
+    @apply absolute left-6 top-16 z-50 w-full bg-white 
+}
+.cus-search-bar{
+  @apply py-2.5 w-64 z-20 rounded-l-lg text-sm text-gray-900 bg-gray-50 rounded-e-lg border-s-gray-50 border-s-2  dark:bg-gray-100    dark:placeholder-gray-400 dark:text-gray-400
+}
+
