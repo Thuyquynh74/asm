@@ -1,40 +1,51 @@
 <template>
- <h2 class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-3xl font-bold mb-6 text-center text-gray-800">Chi Tiết Bài Viết</h2>
+  <div>
+    <h2 class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 text-3xl font-bold mb-6 text-center text-gray-800">Chi Tiết Bài Viết</h2>
 
-<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-  <div class="bg-white rounded-lg shadow-md p-6">
-    <h2 class="text-3xl font-bold mb-3">{{ post.title }}</h2>
-    <p class="text-blue-700 mb-4 text-xl">Người đăng: {{ username }}</p>
-    <p class="text-gray-600 mb-4 italic">Danh mục: {{ post.category }}</p>
+    <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-3xl font-bold mb-3">{{ post.title }}</h2>
+        <p class="text-blue-700 mb-4 text-xl">Người đăng: {{ username }}</p>
+        <p class="text-gray-600 mb-4 italic">Danh mục: {{ post.category }}</p>
 
-    <!-- Image -->
-    <div v-if="post.image" class="mb-6">
-      <img :src="post.image" :alt="post.title" class="w-full max-h-196 object-fill rounded-lg shadow-lg">
+        <!-- Image -->
+        <div v-if="post.image" class="mb-6">
+          <img :src="post.image" :alt="post.title" class="w-full max-h-196 object-fill rounded-lg shadow-lg">
+        </div>
+
+        <!-- Content -->
+        <div class="prose max-w-none mb-6" v-html="post.content"></div>
+
+        <!-- Like/Unlike Button and Like Count -->
+        <div class="flex items-center mb-4">
+          <button @click="toggleLike" 
+            class="px-3 py-2 text-white rounded-lg transition duration-300 ease-in-out">
+            <!-- Heart Icon -->
+            <i class="fa fa-heart" :class="{'text-red-600': post.isLiked, 'text-gray-500': !post.isLiked}"></i>
+          </button>
+          <span class="ml-3 text-gray-700">{{ post.likeCount || 0 }} Likes</span>
+        </div>
+
+        <!-- Back Button -->
+        <router-link 
+          to="/home" 
+          class="inline-block px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-300"
+        >
+          Quay lại Trang Chính
+        </router-link>
+      </div>
     </div>
-
-    <!-- Content -->
-    <div class="prose max-w-none mb-6" v-html="post.content"></div>
-
-    <!-- Back Button -->
-    <router-link 
-      to="/home" 
-      class="inline-block px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-300"
-    >
-      Quay lại Trang Chính
-    </router-link>
   </div>
-</div>
-
-
 </template>
+
 <script>
 export default {
   name: 'BlogPost',
   data() {
     return {
       username: '',
-      post: null
-    }
+      post: null,
+    };
   },
   created() {
     const key = this.$route.params.key;
@@ -42,21 +53,47 @@ export default {
       const postData = localStorage.getItem(key);
       if (postData) {
         this.post = JSON.parse(postData);
+
+        // Ensure `likeCount` and `likedUsers` are properly initialized
+        if (!this.post.likedUsers) this.post.likedUsers = [];
+        if (this.post.likeCount === undefined) this.post.likeCount = 0;
+
+        // Check if current user has liked the post
+        const username = localStorage.getItem('username');
+        this.username = username || '';
+        this.post.isLiked = this.post.likedUsers.includes(this.username);
       }
     } catch (error) {
       console.error('Lỗi khi lấy dữ liệu bài viết:', error);
       this.post = null;
     }
-    const username = localStorage.getItem('username');
-    if (username) {
-      this.isLoggedIn = true;
-      this.username = username; // Set username
-    }
+  },
+  methods: {
+    toggleLike() {
+      if (!this.post || !this.username) return;
+
+      const userIndex = this.post.likedUsers.indexOf(this.username);
+
+      if (userIndex !== -1) {
+        // User has already liked, remove the like
+        this.post.likeCount -= 1;
+        this.post.likedUsers.splice(userIndex, 1);
+        this.post.isLiked = false;
+      } else {
+        // User hasn't liked, add the like
+        this.post.likeCount += 1;
+        this.post.likedUsers.push(this.username);
+        this.post.isLiked = true;
+      }
+
+      // Save updated post back to localStorage
+      localStorage.setItem(this.$route.params.key, JSON.stringify(this.post));
+    },
   },
   head() {
     return {
-      title: this.post ? this.post.title : 'Không tìm thấy bài viết'
-    }
-  }
-}
+      title: this.post ? this.post.title : 'Không tìm thấy bài viết',
+    };
+  },
+};
 </script>
