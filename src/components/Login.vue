@@ -24,6 +24,7 @@
             class="w-full px-4 py-2 border border-yellow-300 rounded-lg" placeholder="Password" />
           <p v-if="passwordError" class="text-red-500 text-sm mt-1">{{ passwordError }}</p>
         </div>
+        <GoogleLogin :callback="callback" prompt auto-login/>
         <button type="submit" class="w-full bg-gray-600 text-gray-900 py-2 rounded-lg hover:bg-gray-700">
           Login
         </button>

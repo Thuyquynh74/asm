@@ -1,16 +1,17 @@
 <script setup>
 import { RouterView } from 'vue-router';
+import { decodeCredential, GoogleLogin } from 'vue3-google-login';
 </script>
 
 <template>
   <div id="root" :class="{ dark: isDarkMode }">
     <div class="content-wrapper max-w-screen-2xl text-base mx-auto px-8">
       <header class="pt-8 pb-12 mx-10">
-        <nav class="flex flex-row justify-between items-center px-6">
+        <nav class="flex flex-row justify-between items-center px-6"> 
           <!-- Logo -->
-          <div class="logo text-center font-semibold cursor-pointer flex items-center">
+           <div class="logo text-center font-semibold cursor-pointer flex items-center">
             <img src="./img/logo_2.png" class="h-9 w-70 ml-4" alt="Logo" />
-          </div>
+          </div> 
 
           <!-- Menu -->
           <ul id="cus-top-menu" class="hidden lg:flex lg:items-center lg:gap-9 text-md text-gray-500 font-bold">
@@ -35,10 +36,10 @@ import { RouterView } from 'vue-router';
             <li v-if="!isLoggedIn" class="cus-top-menu-item">
               <router-link to="/login">Login</router-link>
             </li>
-          </ul>
+          </ul> 
 
           <!-- Search and Dark Mode Toggle -->
-          <div class="flex items-center gap-x-4">
+         <div class="flex items-center gap-x-4">
             <!-- Thanh tìm kiếm -->
             <div v-if="isLoggedIn" class="relative flex items-center">
               <input type="text" v-model="searchQuery" placeholder="Search for posts..."
@@ -50,20 +51,20 @@ import { RouterView } from 'vue-router';
                   <path stroke-linecap="round" stroke-linejoin="round" d="M10 6a4 4 0 110 8 4 4 0 010-8zm8 14l-4-4" />
                 </svg>
               </button>
-            </div>
+            </div> 
             <!-- Modal hiển thị kết quả -->
             <div v-if="showModal" class="modal-backdrop">
-              <div class="modal-content">
+              <div class="modal-content"> 
                 <!-- Header của modal -->
-                <div class="flex justify-between items-center">
+              <div class="flex justify-between items-center">
                   <h2 class="text-lg font-bold">Kết quả tìm kiếm</h2>
                   <button @click="closeModal"
                     class="text-red-500 hover:text-red-700 transition-colors text-xl font-bold" aria-label="Close">
                     &times;
                   </button>
-                </div>
+                </div> 
                 <!-- Nội dung của modal -->
-                <ul>
+                 <ul>
                   <li v-for="(post, index) in filteredPosts" :key="index" @click="goToPost(post.key)"
                     class="cursor-pointer hover:underline text-blue-600 mt-3">
                     <h3 class="font-bold">{{ post.title }}</h3>
@@ -71,7 +72,7 @@ import { RouterView } from 'vue-router';
                   </li>
                 </ul>
               </div>
-            </div>
+            </div> 
 
             <!-- Dark Mode Toggle -->
             <div class="relative w-12 h-6 bg-gray-300 rounded-full cursor-pointer flex items-center px-1"
@@ -94,12 +95,12 @@ import { RouterView } from 'vue-router';
           </div>
         </nav>
       </header>
-    </div>
+    </div> 
 
-    <div class="content-wrapper max-w-screen-2xl text-base mx-auto px-8">
+     <div class="content-wrapper max-w-screen-2xl text-base mx-auto px-8">
       <router-view></router-view>
     </div>
-  </div>
+  </div> 
   <footer class="bg-gray-100">
     <div class="mx-auto w-full max-w-screen-xl p-10 py-6 lg:py-8">
       <div class="md:flex md:justify-between">
@@ -200,6 +201,7 @@ import { RouterView } from 'vue-router';
 </template>
 
 <script>
+import { decodeCredential } from 'vue3-google-login';
 export default {
   name: 'App',
   data() {
@@ -210,7 +212,15 @@ export default {
       showModal: false,
       isDarkMode: false,
       isLoggedIn: false,
-      username: ''
+      loggedIn:false,
+      user:null,
+      username: '',
+      callback:(Response) =>{
+        console.log("logged in")
+        this.loggedIn=true
+        console.log(Response)
+        this.user=decodeCredential(response.credential)
+      }
     };
   },
   created() {
